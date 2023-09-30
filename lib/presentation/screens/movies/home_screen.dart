@@ -1,3 +1,4 @@
+import 'package:cinemapedia/presentation/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -44,15 +45,13 @@ class _HomeViewState extends ConsumerState<_HomeView> {
     );
     }
 
-    return ListView.builder(
-      itemCount: movies.length,
-      itemBuilder: (context, index) {
-        final movie = movies[index];
+    return Column(
+      children: [
 
-        return ListTile(
-          title:  Text(movie.title),
-        );
-      },
+        const CustomAppBar(),
+        
+        MoviesSlideshow(movies: movies)
+      ],
     );
   }
 } 
