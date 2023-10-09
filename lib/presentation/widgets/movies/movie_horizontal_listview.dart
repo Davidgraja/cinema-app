@@ -2,6 +2,7 @@ import 'package:animate_do/animate_do.dart';
 import 'package:cinemapedia/config/helpers/human_formats.dart';
 import 'package:cinemapedia/domian/entities/movie.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class MovieHorizontalListView extends StatefulWidget {
   final List<Movie> movies;
@@ -17,11 +18,11 @@ class MovieHorizontalListView extends StatefulWidget {
       this.loadNextPage});
 
   @override
-  State<MovieHorizontalListView> createState() => _MovieHorizontalListViewState();
+  State<MovieHorizontalListView> createState() =>
+      _MovieHorizontalListViewState();
 }
 
 class _MovieHorizontalListViewState extends State<MovieHorizontalListView> {
-
   final scrollController = ScrollController();
 
   @override
@@ -30,15 +31,14 @@ class _MovieHorizontalListViewState extends State<MovieHorizontalListView> {
 
     scrollController.addListener(() {
       // Todo :
-      if(widget.loadNextPage == null) return;
+      if (widget.loadNextPage == null) return;
 
-      if((scrollController.position.pixels  + 200) >= scrollController.position.maxScrollExtent){
+      if ((scrollController.position.pixels + 200) >=
+          scrollController.position.maxScrollExtent) {
         widget.loadNextPage!();
       }
-
     });
   }
-
 
   @override
   void dispose() {
@@ -56,9 +56,9 @@ class _MovieHorizontalListViewState extends State<MovieHorizontalListView> {
             title: widget.title,
             subTitle: widget.subTitle,
           ),
-
-          const SizedBox(height: 5,),
-
+        const SizedBox(
+          height: 5,
+        ),
         Expanded(
           child: ListView.builder(
             controller: scrollController,
@@ -81,7 +81,6 @@ class _Slide extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     final textStyles = Theme.of(context).textTheme;
 
     return Container(
@@ -89,7 +88,6 @@ class _Slide extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-
             // * imagen
             SizedBox(
               width: 150,
@@ -105,26 +103,31 @@ class _Slide extends StatelessWidget {
                       return const SizedBox(
                         height: 220,
                         width: 150,
-                        child:  DecoratedBox(
-                         decoration: BoxDecoration(
-                          boxShadow: [
-                            BoxShadow(color: Colors.black45, blurRadius: 10, offset: Offset(0, 0))
-                          ]
-                        ),
-                        child: DecoratedBox(decoration: BoxDecoration(color: Colors.black12)),
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(boxShadow: [
+                            BoxShadow(
+                                color: Colors.black45,
+                                blurRadius: 10,
+                                offset: Offset(0, 0))
+                          ]),
+                          child: DecoratedBox(
+                              decoration: BoxDecoration(color: Colors.black12)),
                         ),
                       );
                     }
 
-                    return FadeIn(child: child);
+                    return GestureDetector(
+                      onTap: () => context.push('/movie/${movie.id}'),
+                      child: FadeIn(child: child),
+                    );
                   },
                 ),
               ),
             ),
 
-
-          const SizedBox(height: 5,),
-
+            const SizedBox(
+              height: 5,
+            ),
 
             //* Title slider
             SizedBox(
@@ -132,24 +135,33 @@ class _Slide extends StatelessWidget {
               child: Text(
                 movie.title,
                 style: textStyles.titleSmall,
-                maxLines:2 ,
+                maxLines: 2,
               ),
             ),
 
             //* Rating
             SizedBox(
               width: 150,
-              child: Row(  
+              child: Row(
                 children: [
-                  Icon(Icons.star_half_outlined , color: Colors.yellow.shade800,),
-                  const SizedBox(width: 3,),
-                  Text('${movie.voteAverage}' , style: textStyles.bodyMedium?.copyWith(color: Colors.yellow.shade800),),
-                  const SizedBox(width: 10,),
+                  Icon(
+                    Icons.star_half_outlined,
+                    color: Colors.yellow.shade800,
+                  ),
+                  const SizedBox(
+                    width: 3,
+                  ),
+                  Text(
+                    '${movie.voteAverage}',
+                    style: textStyles.bodyMedium
+                        ?.copyWith(color: Colors.yellow.shade800),
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
                   const Spacer(),
-                  Text( 
-                    HumanFormats.humanReadbledNumber(movie.popularity) , 
-                    style: textStyles.bodySmall
-                  ),              
+                  Text(HumanFormats.humanReadbledNumber(movie.popularity),
+                      style: textStyles.bodySmall),
                 ],
               ),
             )
