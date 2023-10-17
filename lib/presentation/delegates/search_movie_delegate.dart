@@ -42,7 +42,6 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
       future: searchMovies(query),
       builder: (context, snapshot) {
         final movies = snapshot.data ?? [];
-       
         return ListView.builder(
           itemCount: movies.length,
           itemBuilder: (context, index) {
