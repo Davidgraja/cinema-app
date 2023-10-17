@@ -20,8 +20,8 @@ class MoviesdbDatasources extends MoviesDataSources {
     final movieDbData = MovieDbResponse.fromJson(json);
 
     final List<Movie> movies = movieDbData.results
-        .where((movie) => movie.posterPath != 'no-poster')
         .map((movie) => MovieMapper.movieDBToEntity(movie))
+        .where((movie) => movie.posterPath != 'no-poster')
         .toList();
 
     return movies;
@@ -76,15 +76,13 @@ class MoviesdbDatasources extends MoviesDataSources {
 
   @override
   Future<List<Movie>> searchMovies(String query) async {
-
-    final response = await dio.get('/search/movie' , queryParameters: {'query' : query});
-
+    final response =
+        await dio.get('/search/movie', queryParameters: {'query': query});
 
     if (response.statusCode != 200) {
       throw Exception('Movie  $query no found');
     }
 
     return _jsonToMovies(response.data);
-    
   }
 }
