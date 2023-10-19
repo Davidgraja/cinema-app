@@ -7,8 +7,13 @@ import 'package:flutter/material.dart';
 
 typedef SearchMoviesCallback = Future<List<Movie>> Function(String query);
 
+
 class SearchMovieDelegate extends SearchDelegate<Movie?> {
   final SearchMoviesCallback searchMovies;
+
+  // Function clearQuery;
+
+  VoidCallback clearQuery;
 
   /// ? Implementacion de un Debounce time
   /// Para tener una idea de lo que se trata un Debounce , basicamente se trata de la duración o periodo de tiempo  que
@@ -23,19 +28,29 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
   //? Un Timer Permite determinar un periodo de tiempo , al igual que limpiarlo y cancelarlo en el caso de se reciban muchos valores
   Timer? _debounceTimer;
 
-  SearchMovieDelegate({required this.searchMovies});
+  SearchMovieDelegate({required this.searchMovies , required this.clearQuery});
+
+
+  void clearStreams(){
+    debouncedMovies.close();
+  }
 
   //? Función encargada que emite el nuevo resultado de las peliculas , se va a llamar cada vez que se añada o elimine una letra al query
   void _onQueryChange(String query) {
 
-    print('Query String cambio');
-
     if (_debounceTimer?.isActive ?? false) _debounceTimer!.cancel(); //? esta condicion cancela y limpia el Timer cada vez que el query cambie
 
-    _debounceTimer = Timer(const Duration(milliseconds: 500), () {
-      print('buscando peliculas');  //? Esto solo se ejecutara cuando se deja de escribir o que  el query no cambie en  500 milisegundos
-    
-      // Todo : Bucar peliculas y emitir al Stream
+    _debounceTimer = Timer(const Duration(milliseconds: 500), () async {
+      //? El codigo solo se ejecutara cuando se deja de escribir o que  el query no cambie en  500 milisegundos
+
+      if (query.isEmpty && !debouncedMovies.isClosed) {
+        debouncedMovies.add([]);
+        return;
+      }
+
+      final movies = await searchMovies(query);
+
+       if(!debouncedMovies.isClosed) debouncedMovies.add(movies);
     });
   }
 
@@ -49,7 +64,11 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
         animate: query.isNotEmpty,
         duration: const Duration(milliseconds: 200),
         child: IconButton(
-            onPressed: () => query = '', icon: const Icon(Icons.clear_rounded)),
+          onPressed: (){
+            query = '';
+            clearQuery();
+          },
+          icon: const Icon(Icons.clear_rounded)),
       )
     ];
   }
@@ -57,7 +76,10 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
   @override
   Widget? buildLeading(BuildContext context) {
     return IconButton(
-        onPressed: () => close(context, null),
+        onPressed: () {
+          clearStreams();
+          close(context, null);
+        },
         icon: const Icon(Icons.arrow_back_ios_rounded));
   }
 
@@ -81,16 +103,21 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
             itemCount: movies.length,
             itemBuilder: (context, index) => _MovieItemSearch(
                   movie: movies[index],
-                  onMovieSelected: close,
+                  onMovieSelected:( context, movie){
+                    clearStreams();
+                    close(context , movie);
+                  } ,
                 ));
       },
     );
   }
 }
 
+typedef MovieSelected = void Function(BuildContext context , Movie movie);
 class _MovieItemSearch extends StatelessWidget {
   final Movie movie;
-  final Function onMovieSelected;
+  final MovieSelected onMovieSelected;
+
   const _MovieItemSearch({required this.movie, required this.onMovieSelected});
 
   @override
