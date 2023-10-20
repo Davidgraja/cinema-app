@@ -10,8 +10,7 @@ typedef SearchMoviesCallback = Future<List<Movie>> Function(String query);
 
 class SearchMovieDelegate extends SearchDelegate<Movie?> {
   final SearchMoviesCallback searchMovies;
-
-  // Function clearQuery;
+  final List<Movie> initialMovies;
 
   VoidCallback clearQuery;
 
@@ -28,7 +27,7 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
   //? Un Timer Permite determinar un periodo de tiempo , al igual que limpiarlo y cancelarlo en el caso de se reciban muchos valores
   Timer? _debounceTimer;
 
-  SearchMovieDelegate({required this.searchMovies , required this.clearQuery});
+  SearchMovieDelegate({required this.searchMovies , required this.clearQuery , required this.initialMovies});
 
 
   void clearStreams(){
@@ -43,11 +42,6 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
     _debounceTimer = Timer(const Duration(milliseconds: 500), () async {
       //? El codigo solo se ejecutara cuando se deja de escribir o que  el query no cambie en  500 milisegundos
 
-      if (query.isEmpty && !debouncedMovies.isClosed) {
-        debouncedMovies.add([]);
-        return;
-      }
-
       final movies = await searchMovies(query);
 
        if(!debouncedMovies.isClosed) debouncedMovies.add(movies);
@@ -55,7 +49,7 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
   }
 
   @override
-  String get searchFieldLabel => 'Buscar pelicula';
+  String get searchFieldLabel => 'Buscar peliculas';
 
   @override
   List<Widget>? buildActions(BuildContext context) {
@@ -95,8 +89,8 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
 
     //?  uso del stream
     return StreamBuilder(
-      stream: debouncedMovies
-          .stream, // ? El flujo que este controlador está controlando.
+      initialData: initialMovies,
+      stream: debouncedMovies.stream, // ? El flujo que este controlador está controlando.
       builder: (context, snapshot) {
         final movies = snapshot.data ?? [];
         return ListView.builder(
