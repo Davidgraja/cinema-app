@@ -10,8 +10,7 @@ typedef SearchMoviesCallback = Future<List<Movie>> Function(String query);
 
 class SearchMovieDelegate extends SearchDelegate<Movie?> {
   final SearchMoviesCallback searchMovies;
-  final List<Movie> initialMovies;
-
+  List<Movie> initialMovies;
   VoidCallback clearQuery;
 
   /// ? Implementacion de un Debounce time
@@ -23,47 +22,91 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
 
   // ? implementacion del debounce por medio de un Stream
   StreamController<List<Movie>> debouncedMovies = StreamController.broadcast();
+  StreamController<bool> isLoadingStream = StreamController.broadcast();
 
   //? Un Timer Permite determinar un periodo de tiempo , al igual que limpiarlo y cancelarlo en el caso de se reciban muchos valores
   Timer? _debounceTimer;
 
-  SearchMovieDelegate({required this.searchMovies , required this.clearQuery , required this.initialMovies});
-
+  SearchMovieDelegate({required this.searchMovies , required this.clearQuery , required this.initialMovies}) : super(searchFieldLabel: 'Buscar películas');
 
   void clearStreams(){
+    isLoadingStream.close();
     debouncedMovies.close();
   }
 
   //? Función encargada que emite el nuevo resultado de las peliculas , se va a llamar cada vez que se añada o elimine una letra al query
   void _onQueryChange(String query) {
-
+    isLoadingStream.add(true);
     if (_debounceTimer?.isActive ?? false) _debounceTimer!.cancel(); //? esta condicion cancela y limpia el Timer cada vez que el query cambie
 
     _debounceTimer = Timer(const Duration(milliseconds: 500), () async {
       //? El codigo solo se ejecutara cuando se deja de escribir o que  el query no cambie en  500 milisegundos
-
       final movies = await searchMovies(query);
+      initialMovies = movies;
 
-       if(!debouncedMovies.isClosed) debouncedMovies.add(movies);
+      if(!debouncedMovies.isClosed) {
+        debouncedMovies.add(movies);
+        isLoadingStream.add(false);
+      };
     });
   }
 
-  @override
-  String get searchFieldLabel => 'Buscar peliculas';
+  Widget buildResultAndSuggestions(){
+    return StreamBuilder(
+      initialData: initialMovies,
+      stream: debouncedMovies.stream,
+      builder: (context, snapshot) {
+        final movies = snapshot.data ?? [];
+        return ListView.builder(
+            itemCount: movies.length,
+            itemBuilder: (context, index) => _MovieItemSearch(
+              movie: movies[index],
+              onMovieSelected:( context, movie){
+                clearStreams();
+                close(context , movie);
+              } ,
+            ));
+      },
+    );
+  }
+
 
   @override
   List<Widget>? buildActions(BuildContext context) {
     return [
-      FadeIn(
-        animate: query.isNotEmpty,
-        duration: const Duration(milliseconds: 200),
-        child: IconButton(
-          onPressed: (){
-            query = '';
-            clearQuery();
+      StreamBuilder(
+          stream: isLoadingStream.stream ,
+          builder: (context, snapshot) {
+
+            if(snapshot.data ?? false){
+              return SpinPerfect(
+                duration: const Duration(seconds: 20),
+                spins: 10 ,
+                infinite: true,
+                child: IconButton(
+                    onPressed: (){
+                      query = '';
+                      debouncedMovies.add([]);
+                      clearQuery();
+                    },
+                    icon: const Icon(Icons.refresh_rounded)),
+              );
+            }
+
+            return FadeIn(
+              animate: query.isNotEmpty,
+              duration: const Duration(milliseconds: 200),
+              child: IconButton(
+                  onPressed: (){
+                    query = '';
+                    debouncedMovies.add([]);
+                    clearQuery();
+                  },
+                  icon: const Icon(Icons.clear_rounded)),
+            );
           },
-          icon: const Icon(Icons.clear_rounded)),
       )
+
     ];
   }
 
@@ -79,7 +122,7 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
 
   @override
   Widget buildResults(BuildContext context) {
-    return const Text('buildResults');
+    return buildResultAndSuggestions();
   }
 
   @override
@@ -88,22 +131,7 @@ class SearchMovieDelegate extends SearchDelegate<Movie?> {
     _onQueryChange(query);
 
     //?  uso del stream
-    return StreamBuilder(
-      initialData: initialMovies,
-      stream: debouncedMovies.stream, // ? El flujo que este controlador está controlando.
-      builder: (context, snapshot) {
-        final movies = snapshot.data ?? [];
-        return ListView.builder(
-            itemCount: movies.length,
-            itemBuilder: (context, index) => _MovieItemSearch(
-                  movie: movies[index],
-                  onMovieSelected:( context, movie){
-                    clearStreams();
-                    close(context , movie);
-                  } ,
-                ));
-      },
-    );
+    return buildResultAndSuggestions();
   }
 }
 
