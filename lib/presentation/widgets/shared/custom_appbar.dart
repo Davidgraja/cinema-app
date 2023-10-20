@@ -45,7 +45,7 @@ class CustomAppBar extends ConsumerWidget {
                         context: context,
                         delegate: SearchMovieDelegate(
                           initialMovies: searchMovies,
-                          clearQuery: () => ref.read(searchQueryProvider.notifier).update((state) => '') ,
+                          clearQuery: ref.read(searchedMovieProvider.notifier).clearSearchedMoviesAndQuery ,
                           searchMovies: ref.read(searchedMovieProvider.notifier).searchMoviesByQuery
                         )
                       )
