@@ -6,3 +6,4 @@ export 'movies/movie_repository_provider.dart';
 export 'movies/movies_providers.dart';
 export 'movies/movies_slideshow_provider.dart';
 export 'searchs/search_movies_provider.dart';
+export 'storage/local_storage_provider.dart';
