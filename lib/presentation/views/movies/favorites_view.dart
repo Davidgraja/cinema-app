@@ -13,10 +13,26 @@ class FavoritesView extends  ConsumerStatefulWidget {
 
 class FavoritesViewState extends ConsumerState<FavoritesView> {
 
+  bool isLoading = false;
+  bool isLastPage = false;
+
   @override
   void initState() {
     super.initState();
-    ref.read(favoriteMoviesProvider.notifier).loadNextPage();
+    loadNextPage();
+  }
+
+
+  void loadNextPage() async {
+    if(isLoading || isLastPage) return;
+    isLoading = true;
+    final movies = await ref.read(favoriteMoviesProvider.notifier).loadNextPage();
+    isLoading = false;
+
+    if(movies.isEmpty){
+      isLastPage = true;
+    }
+
   }
 
   @override
@@ -26,7 +42,8 @@ class FavoritesViewState extends ConsumerState<FavoritesView> {
 
 
     return Scaffold(
-      body: MovieMasonry(movies: favoritesMovies,)
+      // TODO : Ver como solucionar de una mejor manera el problema del scroll
+      body: Container(color: Colors.transparent, height: MediaQuery.of(context).size.height - 100,child: MovieMasonry(movies: favoritesMovies, loadNextPage: loadNextPage,))
     );
   }
 }
