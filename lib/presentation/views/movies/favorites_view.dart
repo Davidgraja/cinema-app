@@ -3,6 +3,7 @@ import 'package:cinemapedia/presentation/providers/providers.dart';
 import 'package:cinemapedia/presentation/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class FavoritesView extends  ConsumerStatefulWidget {
   const FavoritesView({super.key});
@@ -40,10 +41,26 @@ class FavoritesViewState extends ConsumerState<FavoritesView> {
 
     final List<Movie> favoritesMovies =  ref.watch(favoriteMoviesProvider).values.toList();
 
+    if(favoritesMovies.isEmpty){
+      final colorScheme = Theme.of(context).colorScheme;
+      return SizedBox.expand(
+          child:Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.favorite_outlined , size: 60  , color: colorScheme.inversePrimary,),
+              Text('Ohh nooo!' , style:  TextStyle(fontSize: 30),),
+              Text('Aun no tiene películas favoritas' , style:  TextStyle(fontSize: 20),),
+
+              SizedBox(height: 10,),
+
+              FilledButton.tonal(onPressed: () => context.go('/home/0'), child: Text('Empieza a buscar'))
+            ],
+          )
+      );
+    }
 
     return Scaffold(
-      // TODO : Ver como solucionar de una mejor manera el problema del scroll
-      body: Container(color: Colors.transparent, height: MediaQuery.of(context).size.height - 100,child: MovieMasonry(movies: favoritesMovies, loadNextPage: loadNextPage,))
+      body: MovieMasonry(movies: favoritesMovies, loadNextPage: loadNextPage,)
     );
   }
 }
