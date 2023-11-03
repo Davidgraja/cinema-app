@@ -218,6 +218,11 @@ class _CustomSliverAppBar extends ConsumerWidget {
     final scaffoldBackgroundColor = Theme.of(context).scaffoldBackgroundColor;
     return SliverAppBar(
       backgroundColor: Colors.black,
+      shape: Border(
+        bottom: BorderSide(
+          color: scaffoldBackgroundColor
+        )
+      ) ,
       expandedHeight: size.height * 0.7,
       leading: IconButton( 
         onPressed: () => context.pop() , 
@@ -238,11 +243,11 @@ class _CustomSliverAppBar extends ConsumerWidget {
         )
       ],     
       flexibleSpace: FlexibleSpaceBar( 
-        titlePadding: const EdgeInsets.only(bottom: 0),        
+        titlePadding: const EdgeInsets.all(0),        
         title: _CustomGradient(
           begin: Alignment.topCenter ,
           end:  Alignment.bottomCenter,
-          stops: const [0.7 , 1.0],
+          stops: const [0.9 , 1.0],
           colors: [Colors.transparent , scaffoldBackgroundColor],
         ),
         background: Stack(
