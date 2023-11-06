@@ -161,7 +161,13 @@ class _MovieItemSearch extends StatelessWidget {
               width: size.width * 0.2,
               child: ClipRRect(
                   borderRadius: BorderRadius.circular(10),
-                  child: Image.network(movie.posterPath)),
+                  child: FadeInImage(
+                    placeholderFit: BoxFit.cover,
+                    fit: BoxFit.cover,
+                    placeholder: const AssetImage('assets/images/fade-loading.gif') ,
+                    image: NetworkImage(movie.posterPath),
+                  )
+              ),
             ),
 
             // Description

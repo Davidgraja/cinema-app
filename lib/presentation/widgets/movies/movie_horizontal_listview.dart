@@ -66,7 +66,9 @@ class _MovieHorizontalListViewState extends State<MovieHorizontalListView> {
             scrollDirection: Axis.horizontal,
             physics: const BouncingScrollPhysics(),
             itemBuilder: (context, index) {
-              return FadeInRight(child: _Slide(movie: widget.movies[index]));
+              return FadeInRight(
+                child: _Slide(movie: widget.movies[index])
+              );
             },
           ),
         )
@@ -83,90 +85,71 @@ class _Slide extends StatelessWidget {
   Widget build(BuildContext context) {
     final textStyles = Theme.of(context).textTheme;
 
-    return Container(
-        margin: const EdgeInsets.symmetric(horizontal: 8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // * imagen
-            SizedBox(
-              width: 150,
-              height: 220,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: Image.network(
-                  movie.posterPath,
-                  fit: BoxFit.cover,
-                  width: 150,
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress != null) {
-                      return const SizedBox(
-                        height: 220,
-                        width: 150,
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(boxShadow: [
-                            BoxShadow(
-                                color: Colors.black45,
-                                blurRadius: 10,
-                                offset: Offset(0, 0))
-                          ]),
-                          child: DecoratedBox(
-                              decoration: BoxDecoration(color: Colors.black12)),
-                        ),
-                      );
-                    }
-
-                    return GestureDetector(
-                      onTap: () => context.push('/home/0/movie/${movie.id}'),
-                      child: FadeIn(child: child),
-                    );
-                  },
+    return GestureDetector(
+      onTap: () => context.push('/home/0/movie/${movie.id}'),
+      child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // * imagen
+              SizedBox(
+                width: 150,
+                height: 220,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: FadeInImage(
+                    placeholderFit: BoxFit.cover,
+                    fit: BoxFit.cover,
+                    placeholder: const  AssetImage('assets/images/fade-loading.gif'),
+                    image: NetworkImage(movie.posterPath) ,
+                  )
                 ),
               ),
-            ),
-
-            const SizedBox(
-              height: 5,
-            ),
-
-            //* Title slider
-            SizedBox(
-              width: 150,
-              child: Text(
-                movie.title,
-                style: textStyles.titleSmall,
-                maxLines: 2,
+    
+              const SizedBox(
+                height: 5,
               ),
-            ),
-
-            //* Rating
-            SizedBox(
-              width: 150,
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.star_half_outlined,
-                    color: Colors.yellow.shade800,
-                  ),
-                  const SizedBox(
-                    width: 3,
-                  ),
-                  Text(
-                    '${movie.voteAverage}',
-                    style: textStyles.bodyMedium
-                        ?.copyWith(color: Colors.yellow.shade800),
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  const Spacer(),
-                  Text(HumanFormats.humanReadbledNumber(movie.popularity),
-                      style: textStyles.bodySmall),
-                ],
+    
+              //* Title slider
+              SizedBox(
+                width: 150,
+                child: Text(
+                  movie.title,
+                  style: textStyles.titleSmall,
+                  maxLines: 2,
+                ),
               ),
-            )
-          ],
-        ));
+    
+              //* Rating
+              SizedBox(
+                width: 150,
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.star_half_outlined,
+                      color: Colors.yellow.shade800,
+                    ),
+                    const SizedBox(
+                      width: 3,
+                    ),
+                    Text(
+                      '${movie.voteAverage}',
+                      style: textStyles.bodyMedium
+                          ?.copyWith(color: Colors.yellow.shade800),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    const Spacer(),
+                    Text(HumanFormats.humanReadbledNumber(movie.popularity),
+                        style: textStyles.bodySmall),
+                  ],
+                ),
+              )
+            ],
+          )),
+    );
   }
 }
 
