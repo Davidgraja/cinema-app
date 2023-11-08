@@ -1,6 +1,7 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:cinemapedia/domian/entities/movie.dart';
 import 'package:cinemapedia/presentation/providers/providers.dart';
+import 'package:cinemapedia/presentation/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -119,10 +120,14 @@ class _MovieDetails extends StatelessWidget {
             ],
           ),
         ),
+
         _ActorsByMovie(movieId: movie.id.toString()),
-        const SizedBox(
-          height: 40,
-        )
+
+  
+        VideosFromMovie(movieId: movie.id,),
+
+        const SizedBox( height: 40,),
+
       ],
     );
   }
@@ -144,7 +149,7 @@ class _ActorsByMovie extends ConsumerWidget {
     final actors = actorsByMovie[movieId];
 
     return SizedBox(
-      height: 300.0,
+      height: 250.0,
       child: ListView.builder(
           scrollDirection: Axis.horizontal,
           itemCount: actors!.length,
@@ -152,7 +157,7 @@ class _ActorsByMovie extends ConsumerWidget {
             final actor = actors[index];
 
             return Container(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
               width: 135,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -180,14 +185,16 @@ class _ActorsByMovie extends ConsumerWidget {
                   ),
                   Text(
                     actor.name,
-                    maxLines: 2,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                   Text(
                     actor.character ?? '',
-                    maxLines: 2,
+                    maxLines: 1,
                     style: const TextStyle(
                         fontWeight: FontWeight.bold,
-                        overflow: TextOverflow.ellipsis),
+                        overflow: TextOverflow.ellipsis
+                      ),
                   ),
                 ],
               ),
