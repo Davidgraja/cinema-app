@@ -1,10 +1,19 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:cinemapedia/domian/entities/movie.dart';
+import 'package:cinemapedia/domian/entities/video.dart';
 import 'package:cinemapedia/presentation/providers/providers.dart';
 import 'package:cinemapedia/presentation/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+
+final FutureProviderFamily<List<Video> , int> videosFromMovieProvider = FutureProvider.family((ref , int movieId) {
+  final movieRepository = ref.watch(movieRepositoryProvider);
+
+  return movieRepository.getYoutubeVideosById(movieId);
+});
+
 
 class MovieScreen extends ConsumerStatefulWidget {
   static const name = 'movie_screen';
@@ -17,7 +26,7 @@ class MovieScreen extends ConsumerStatefulWidget {
   MovieScreenState createState() => MovieScreenState();
 }
 
-class MovieScreenState extends ConsumerState<MovieScreen> {
+class MovieScreenState extends ConsumerState<MovieScreen>{
   @override
   void initState() {
     super.initState();
@@ -27,9 +36,10 @@ class MovieScreenState extends ConsumerState<MovieScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final Movie? movie = ref.watch(movieInfoProvider)[widget.movieId];
+  Widget build(BuildContext context)  {
 
+    final Movie? movie = ref.watch(movieInfoProvider)[widget.movieId];
+    
     if (movie == null) {
       return const Scaffold(
         body: Center(
@@ -38,27 +48,109 @@ class MovieScreenState extends ConsumerState<MovieScreen> {
       );
     }
 
-    return Scaffold(
-      body: CustomScrollView(
-        physics: const ClampingScrollPhysics(),
-        slivers: [
-          _CustomSliverAppBar(
-            movie: movie,
-          ),
-          SliverList(
+    final videosFromMovie =  ref.watch(videosFromMovieProvider(movie.id));
+
+    return videosFromMovie.when(
+      data: (data) => Videobuilder(videos: data , movie: movie) , 
+      error: (_ , __) =>  const SizedBox(), 
+      loading: () => const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(strokeWidth: 2),
+        ),
+      )
+    );
+
+  }
+  
+}
+
+
+class Videobuilder extends StatefulWidget {
+  final Movie movie;
+  final List<Video> videos; 
+  const Videobuilder({super.key, required this.videos, required this.movie});
+
+  @override
+  State<Videobuilder> createState() => _VideobuilderState();
+}
+
+class _VideobuilderState extends State<Videobuilder> {
+
+
+  late YoutubePlayerController controller;
+
+  late String video;
+  late bool isEmpty;
+
+  @override
+  void initState() {
+
+    if(widget.videos.isNotEmpty){
+      video = widget.videos.first.youtubeKey;
+      isEmpty = false;
+
+    }
+    else{
+      video = '';
+      isEmpty = true;
+    }
+    
+    controller = YoutubePlayerController(
+      initialVideoId: video,
+      flags: const  YoutubePlayerFlags(
+        autoPlay: false,
+        hideThumbnail: true,
+        showLiveFullscreenButton: false,
+        disableDragSeek: true,
+        enableCaption: false
+      )
+    );
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    return  YoutubePlayerBuilder(
+      player: YoutubePlayer(controller: controller), 
+      builder: (context, player) {
+
+        return  Scaffold(
+        body: CustomScrollView(
+          physics: const ClampingScrollPhysics(),
+          slivers: [
+            _CustomSliverAppBar(
+              movie: widget.movie,
+            ),
+            SliverList(
               delegate: SliverChildBuilderDelegate(
-                  (context, index) => _MovieDetails(movie: movie),
-                  childCount: 1)),
-        ],
-      ),
+                  (context, index) => _MovieDetails(
+                      movie: widget.movie , 
+                      player:  isEmpty ? const SizedBox() : MovieVideo(video: widget.videos.first, player: player) 
+                      ),
+                  childCount: 1
+              )
+            ),
+          ],
+        ),
+        );
+      },
     );
   }
 }
 
+
 class _MovieDetails extends StatelessWidget {
   final Movie movie;
+  final Widget player;
 
-  const _MovieDetails({required this.movie});
+  const _MovieDetails({required this.movie, required this.player});
 
   @override
   Widget build(BuildContext context) {
@@ -122,9 +214,8 @@ class _MovieDetails extends StatelessWidget {
         ),
 
         _ActorsByMovie(movieId: movie.id.toString()),
-
-  
-        VideosFromMovie(movieId: movie.id,),
+ 
+        player,
 
         const SizedBox( height: 40,),
 
