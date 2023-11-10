@@ -170,7 +170,9 @@ class _MovieDetails extends StatelessWidget {
  
         player,
 
-        const SizedBox( height: 40,),
+        SimilarMovies(movieId: movie.id,),
+
+        // const SizedBox( height: 20,),
 
       ],
     );
