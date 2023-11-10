@@ -41,11 +41,7 @@ class MovieScreenState extends ConsumerState<MovieScreen>{
     final Movie? movie = ref.watch(movieInfoProvider)[widget.movieId];
     
     if (movie == null) {
-      return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(strokeWidth: 2),
-        ),
-      );
+      return _LoadingInfo();
     }
 
     final videosFromMovie =  ref.watch(videosFromMovieProvider(movie.id));
@@ -53,15 +49,23 @@ class MovieScreenState extends ConsumerState<MovieScreen>{
     return videosFromMovie.when(
       data: (data) => Videobuilder(videos: data , movie: movie) , 
       error: (_ , __) =>  const SizedBox(), 
-      loading: () => const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(strokeWidth: 2),
-        ),
-      )
+      loading: () => _LoadingInfo()
     );
 
   }
   
+}
+
+class _LoadingInfo extends StatelessWidget {
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Center(
+        child: CircularProgressIndicator(strokeWidth: 2),
+      ),
+    );
+  }
 }
 
 
@@ -79,24 +83,23 @@ class _VideobuilderState extends State<Videobuilder> {
 
   late YoutubePlayerController controller;
 
-  late String video;
+  late String youtubeKey;
   late bool isEmpty;
 
   @override
   void initState() {
 
     if(widget.videos.isNotEmpty){
-      video = widget.videos.first.youtubeKey;
+      youtubeKey = widget.videos.first.youtubeKey;
       isEmpty = false;
-
     }
     else{
-      video = '';
+      youtubeKey = '';
       isEmpty = true;
     }
     
     controller = YoutubePlayerController(
-      initialVideoId: video,
+      initialVideoId: youtubeKey,
       flags: const  YoutubePlayerFlags(
         autoPlay: false,
         hideThumbnail: true,
@@ -130,15 +133,14 @@ class _VideobuilderState extends State<Videobuilder> {
             ),
             SliverList(
               delegate: SliverChildBuilderDelegate(
+                  childCount: 1,
                   (context, index) => _MovieDetails(
                       movie: widget.movie , 
                       player:  isEmpty ? const SizedBox() : MovieVideo(video: widget.videos.first, player: player) 
-                      ),
-                  childCount: 1
+                  )
               )
             ),
-          ],
-        ),
+          ],),
         );
       },
     );
@@ -160,58 +162,9 @@ class _MovieDetails extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.all(8),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              //? Imagen
-              ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: Image.network(
-                    movie.posterPath,
-                    fit: BoxFit.cover,
-                    width: size.width * 0.3,
-                  )),
+        _MovieInfo(movie: movie, size: size, textStyles: textStyles),
 
-              const SizedBox(
-                width: 10,
-              ),
-
-              //? Descripción
-              SizedBox(
-                width: (size.width - 40) * 0.7,
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        movie.title,
-                        style: textStyles.titleLarge,
-                      ),
-                      Text(
-                        movie.overview,
-                        style: textStyles.labelLarge,
-                      )
-                    ]),
-              )
-            ],
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8),
-          child: Wrap(
-            children: [
-              ...movie.genreIds.map((gender) => Container(
-                    margin: const EdgeInsets.only(right: 10),
-                    child: Chip(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20)),
-                      label: Text(gender),
-                    ),
-                  ))
-            ],
-          ),
-        ),
+        _GeneresChips(movie: movie),
 
         _ActorsByMovie(movieId: movie.id.toString()),
  
@@ -220,6 +173,84 @@ class _MovieDetails extends StatelessWidget {
         const SizedBox( height: 40,),
 
       ],
+    );
+  }
+}
+
+class _MovieInfo extends StatelessWidget {
+  const _MovieInfo({
+    required this.movie,
+    required this.size,
+    required this.textStyles,
+  });
+
+  final Movie movie;
+  final Size size;
+  final TextTheme textStyles;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          //? Imagen
+          ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Image.network(
+                movie.posterPath,
+                fit: BoxFit.cover,
+                width: size.width * 0.3,
+              )),
+
+          const SizedBox(
+            width: 10,
+          ),
+
+          //? Descripción
+          SizedBox(
+            width: (size.width - 40) * 0.7,
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    movie.title,
+                    style: textStyles.titleLarge,
+                  ),
+                  Text(
+                    movie.overview,
+                    style: textStyles.labelLarge,
+                  )
+                ]),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class _GeneresChips extends StatelessWidget {
+  const _GeneresChips({required this.movie});
+
+  final Movie movie;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: Wrap(
+        children: [
+          ...movie.genreIds.map((gender) => Container(
+                margin: const EdgeInsets.only(right: 10),
+                child: Chip(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20)),
+                  label: Text(gender),
+                ),
+              ))
+        ],
+      ),
     );
   }
 }
