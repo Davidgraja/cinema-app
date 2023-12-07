@@ -1,12 +1,12 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:cinemapedia/domian/entities/movie.dart';
 import 'package:cinemapedia/domian/entities/video.dart';
 import 'package:cinemapedia/presentation/providers/providers.dart';
 import 'package:cinemapedia/presentation/widgets/widgets.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 final FutureProviderFamily<List<Video> , int> videosFromMovieProvider = FutureProvider.family((ref , int movieId) {
   final movieRepository = ref.watch(movieRepositoryProvider);
@@ -117,6 +117,12 @@ class _VideobuilderState extends State<Videobuilder> {
     super.dispose();
   }
 
+  @override
+  void didUpdateWidget(covariant Videobuilder oldWidget) {
+    controller.pause();
+    super.didUpdateWidget(oldWidget);
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -170,7 +176,7 @@ class _MovieDetails extends StatelessWidget {
  
         player,
 
-        SimilarMovies(movieId: movie.id,),
+        SimilarMovies(movieId: movie.id, ),
 
         // const SizedBox( height: 20,),
 
