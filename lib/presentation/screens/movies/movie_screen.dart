@@ -273,7 +273,10 @@ class _ActorsByMovie extends ConsumerWidget {
     final actorsByMovie = ref.watch(actorsByMovieProvider);
 
     if (actorsByMovie[movieId] == null) {
-      return const CircularProgressIndicator(strokeWidth: 2);
+      return const SizedBox(
+        height: 250,
+        child: Center(child: CircularProgressIndicator(strokeWidth: 2),),
+      ) ;
     }
 
     final actors = actorsByMovie[movieId];
