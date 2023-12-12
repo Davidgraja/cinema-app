@@ -1,7 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:cinemapedia/presentation/views/views.dart';
 import 'package:cinemapedia/presentation/widgets/widgets.dart';
-import 'package:flutter/material.dart';
-
 
 class HomeScreen extends StatefulWidget {
   static const name = 'home-screen';
@@ -36,7 +35,6 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
     FavoritesView()
   ];
 
-
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -50,7 +48,11 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
     }
 
     return  Scaffold(
-      body: PageView(physics: const NeverScrollableScrollPhysics(),controller: pageController , children: viewRoutes,),
+      body: PageView(
+        physics: const NeverScrollableScrollPhysics(),
+        controller: pageController ,
+        children: viewRoutes,
+      ),
       bottomNavigationBar:  CustomBottomNavigationBar(currentIndex: widget.pageIndex,),
     );
   }
