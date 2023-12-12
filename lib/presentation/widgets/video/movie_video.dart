@@ -22,7 +22,7 @@ class MovieVideo extends StatelessWidget {
           const SizedBox(height: 8,),
 
           ClipRRect(
-            borderRadius: BorderRadius.circular(20),  
+            borderRadius: BorderRadius.circular(8),
             child: player
           )
         ],
