@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:cinemapedia/domian/entities/movie.dart';
@@ -80,7 +79,7 @@ class Videobuilder extends StatefulWidget {
 
 class _VideobuilderState extends State<Videobuilder> {
 
-
+  double opacity = 1;
   late YoutubePlayerController controller;
 
   late String youtubeKey;
@@ -123,32 +122,41 @@ class _VideobuilderState extends State<Videobuilder> {
     super.didUpdateWidget(oldWidget);
   }
 
+  Future<bool> onBackScope() async {
+    setState(() {
+      opacity = 0;
+    });
+    return true;
+  }
 
   @override
   Widget build(BuildContext context) {
-    return  YoutubePlayerBuilder(
-      player: YoutubePlayer(controller: controller), 
-      builder: (context, player) {
+    return  WillPopScope(
+      onWillPop: onBackScope,
+      child: YoutubePlayerBuilder(
+        player: YoutubePlayer(controller: controller),
+        builder: (context, player) {
 
-        return  Scaffold(
-        body: CustomScrollView(
-          physics: const ClampingScrollPhysics(),
-          slivers: [
-            _CustomSliverAppBar(
-              movie: widget.movie,
-            ),
-            SliverList(
-              delegate: SliverChildBuilderDelegate(
-                  childCount: 1,
-                  (context, index) => _MovieDetails(
-                      movie: widget.movie , 
-                      player:  isEmpty ? const SizedBox() : MovieVideo(video: widget.videos.first, player: player) 
-                  )
-              )
-            ),
-          ],),
-        );
-      },
+          return  Scaffold(
+          body: CustomScrollView(
+            physics: const ClampingScrollPhysics(),
+            slivers: [
+              _CustomSliverAppBar(
+                movie: widget.movie,
+              ),
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                    childCount: 1,
+                    (context, index) => _MovieDetails(
+                        movie: widget.movie ,
+                        player:  isEmpty ? const SizedBox() : MovieVideo(video: widget.videos.first, player: Opacity( opacity: opacity  ,child: player))
+                    )
+                )
+              ),
+            ],),
+          );
+        },
+      ),
     );
   }
 }
@@ -177,8 +185,6 @@ class _MovieDetails extends StatelessWidget {
         player,
 
         SimilarMovies(movieId: movie.id, ),
-
-        // const SizedBox( height: 20,),
 
       ],
     );
@@ -357,6 +363,7 @@ class _CustomSliverAppBar extends ConsumerWidget {
 
     final scaffoldBackgroundColor = Theme.of(context).scaffoldBackgroundColor;
     return SliverAppBar(
+     foregroundColor : Colors.white.withAlpha(254),
       backgroundColor: Colors.black,
       shape: Border(
         bottom: BorderSide(
@@ -364,9 +371,7 @@ class _CustomSliverAppBar extends ConsumerWidget {
         )
       ) ,
       expandedHeight: size.height * 0.7,
-      leading: IconButton( 
-        onPressed: () => context.pop() , 
-        icon: const Icon(Icons.arrow_back_ios , color: Colors.white,) ) ,
+
       actions: [
         IconButton(
           onPressed: () async {
@@ -377,12 +382,12 @@ class _CustomSliverAppBar extends ConsumerWidget {
             loading: () => const CircularProgressIndicator(strokeWidth: 2,),
             data: (isFavorite) =>  isFavorite
             ? const Icon(Icons.favorite_rounded , color: Colors.red,)
-            : const Icon(Icons.favorite , color: Colors.white,),
+            : const Icon(Icons.favorite ),
             error: (_, __) => throw  UnimplementedError(),
           )
         )
       ],     
-      flexibleSpace: FlexibleSpaceBar( 
+      flexibleSpace: FlexibleSpaceBar(
         titlePadding: const EdgeInsets.all(0),        
         title: _CustomGradient(
           begin: Alignment.topCenter ,
@@ -432,7 +437,6 @@ class _CustomSliverAppBar extends ConsumerWidget {
     );
   }
 }
-
 
 class _CustomGradient extends StatelessWidget {
   final AlignmentGeometry begin;
