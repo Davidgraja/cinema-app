@@ -6,3 +6,9 @@
 '''
 flutter pub run build_runner build
 '''
+
+# Prod
+Cambiar el nombre de la aplicación
+'''
+flutter pub run change_app_package_name:main com.new.package.name
+'''
