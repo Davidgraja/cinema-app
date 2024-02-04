@@ -28,26 +28,22 @@ class CustomBottomNavigationBar extends StatelessWidget {
   }
   @override
   Widget build(BuildContext context) {
-    return BottomNavigationBar(
-      currentIndex: currentIndex,
-      onTap: ( index) => onItemTapped(context , index),
-      elevation: 0,
-      items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home_max),
-          label: 'Inicio'
-        ),
+    return NavigationBar(
+      selectedIndex: currentIndex,  
+      onDestinationSelected: (index) {
+        onItemTapped(context, index);
+      } ,   
+      height: 60,
+      elevation: 60,
+      surfaceTintColor: Colors.transparent,
+      shadowColor: (Theme.of(context).brightness == Brightness.light) ? Colors.black : Colors.white,
+      labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected ,
+      destinations: const [
+        NavigationDestination(icon: Icon(Icons.home_max_outlined), label: 'Inicio'),
+        NavigationDestination(icon: Icon(Icons.stars), label: 'Populares'),
+        NavigationDestination(icon: Icon(Icons.favorite_border), label: 'Favoritos'),
+      ],
 
-        BottomNavigationBarItem(
-          icon: Icon(Icons.stars),
-          label: 'Populares'
-        ),
-
-        BottomNavigationBarItem(
-          icon: Icon(Icons.favorite_border_outlined),
-          label: 'Favoritos'
-        ),
-      ]
     );
   }
 }
