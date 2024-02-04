@@ -166,7 +166,7 @@ class _Header extends StatelessWidget {
     final titleStyle = Theme.of(context).textTheme.titleLarge;
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 10),
+      margin: const EdgeInsets.symmetric(horizontal: 10 , vertical: 4),
       child: Row(
         children: [
           if (title != null)
