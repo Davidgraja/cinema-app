@@ -54,41 +54,32 @@ class _MovieInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) { 
 
-    return  Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+    return Container(
+      padding: const  EdgeInsets.symmetric(horizontal: 20),
+      width: double.infinity,
       child: Column(
-      
-        crossAxisAlignment: CrossAxisAlignment.center,
-      
         children: [
+
+          _MovieImage(urlImage: movie.posterPath,),
+
+
+
+          const SizedBox(height: 20,),
+
+          _Header(movieName: movie.title,),
       
-        // image
+
+
+          const SizedBox(height: 20,),
       
-        _MovieImage(urlImage: movie.posterPath,),
+          _InformationSubtitles( movie: movie,),
       
-      
-        // name and save
-      
-        const SizedBox(height: 20,),
-      
-        _Header(movieName: movie.title,),
-      
-      
-        // more information
-      
-        const SizedBox(height: 20,),
-      
-      _InformationSubtitles( movie: movie,),
-      
-      
-        // tabbar
-        const SizedBox(height: 20,),
-      
-        _CustomTabBar(movie: movie,) 
-      
-      
+
+          const SizedBox(height: 20,),
+
+          _CustomTabBar(movie: movie,)
         ],
-      ),
+      ),  
     );
   }
 }
@@ -186,7 +177,6 @@ class _CustomTabBar extends StatelessWidget {
   final Movie movie;
   const _CustomTabBar({required this.movie});
 
-
   @override
   Widget build(BuildContext context) {
 
@@ -195,6 +185,7 @@ class _CustomTabBar extends StatelessWidget {
     return DefaultTabController(
       length: 3,
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Container(
              decoration: BoxDecoration(
@@ -223,23 +214,22 @@ class _CustomTabBar extends StatelessWidget {
             ),
           ),
       
-      
+          const SizedBox(height: 20,),
+
           Container(
-            constraints: const BoxConstraints(
-              maxHeight: 380
-            ),
-            margin: const EdgeInsets.only(top: 20),
-            child: TabBarView(
-              clipBehavior: Clip.antiAlias,
-              children: [
-                _TabBarViewDetails(geners: movie.genreIds, overview: movie.overview),
-            
-                const Text('Trailers'),
-                
-                const Text('Actores'),
-              ]
-            ),
+          constraints: const  BoxConstraints(
+            maxHeight: 320
           ),
+            child: TabBarView(
+              children: [
+                
+                _TabBarViewDetails(geners: movie.genreIds, overview: movie.overview),
+          
+                const Text('Actores'),
+                const Text('Actores'),
+              ],
+            )
+          )
         ],
       ),
     );
@@ -275,6 +265,29 @@ class _TabBarViewDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
+
+    List<Widget> generesChips( List<String> geners ){
+
+      final Text genereText =  Text('Genero: ' , style: theme.textTheme.labelLarge,);
+      
+      if(geners.isEmpty){
+        return [
+          genereText,
+          const Text('Los generos no han sido añadidos')
+        ];
+      }
+      
+      return [
+        genereText,
+        ...geners.map((e) => Chip(
+            label: Text(e) ,
+            padding: const EdgeInsets.all(1.0),
+            shape: RoundedRectangleBorder(side: BorderSide(color: theme.colorScheme.primary  ) ,borderRadius: BorderRadius.circular(8.0)),
+          )).toList(),
+      ];
+    }
+
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -282,28 +295,29 @@ class _TabBarViewDetails extends StatelessWidget {
         Wrap(
           alignment: WrapAlignment.start,
           crossAxisAlignment: WrapCrossAlignment.center,
-          spacing: 10,
-          children: [
-            Text('Genero: ' , style: theme.textTheme.labelLarge,),
-    
-            ...geners.map((e) => Chip(
-              label: Text(e) ,
-              padding: const EdgeInsets.all(1.0),
-              shape: RoundedRectangleBorder(side: BorderSide(color: theme.colorScheme.primary  ) ,borderRadius: BorderRadius.circular(8.0)),
-            )).toList(),     
-    
-          ],
+          spacing: 4,
+          children: generesChips(geners)
         ),
 
-        const SizedBox(height: 10,),
+        (geners.isEmpty) ? const SizedBox(height: 10,) : const SizedBox(),
     
         Wrap(
           children: [
-
+        
             Text('Descripción : ' , style: theme.textTheme.labelLarge,),
-
-            Text(overview , overflow: TextOverflow.ellipsis, maxLines: 14,)
-
+        
+            SizedBox(
+              height: 200,
+              child: DraggableScrollableSheet(
+                initialChildSize: 1.0,
+                builder: (context, scrollController) {
+                  return SingleChildScrollView(
+                    child:Text( (overview.isEmpty) ? 'La descripción no ha sido añadida '  : overview) ,
+                  );
+                },
+              ),
+            )
+        
           ],
         )
       
