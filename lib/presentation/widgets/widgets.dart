@@ -7,4 +7,5 @@ export 'shared/custom_appbar.dart';
 export 'shared/custom_bottom_navigationbar.dart';
 export 'shared/full_screen_loader.dart';
 export 'animations/navigation_animation.dart';
-export 'video/movie_video.dart';
+export 'video/movie_video.dart'; // todo : eliminar
+export 'video/movie_video_test.dart'; //todo : renombrar

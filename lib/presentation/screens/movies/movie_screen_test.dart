@@ -1,6 +1,6 @@
 import 'package:cinemapedia/domian/entities/entities.dart';
 import 'package:cinemapedia/presentation/providers/providers.dart';
-import 'package:cinemapedia/presentation/widgets/shared/full_screen_loader.dart';
+import 'package:cinemapedia/presentation/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -225,7 +225,8 @@ class _CustomTabBar extends StatelessWidget {
                 
                 _TabBarViewDetails(geners: movie.genreIds, overview: movie.overview),
           
-                const Text('Actores'),
+                MovieVideoTest( movieId:  movie.id,),
+
                 const Text('Actores'),
               ],
             )
