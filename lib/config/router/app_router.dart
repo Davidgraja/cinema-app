@@ -20,7 +20,7 @@ final appRouter = GoRouter(initialLocation: '/home/0', routes: [
           name: MovieScreen.name,
           pageBuilder: (context, state) {
             final movieId = state.pathParameters['id'] ?? 'no-id';
-            return  navigationAnimation( MovieScreenTest(movieId: movieId));
+            return  navigationAnimation( MovieScreen(movieId: movieId));
           },
         ),
 
