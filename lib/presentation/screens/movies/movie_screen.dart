@@ -348,7 +348,7 @@ class _ActorsInfo extends ConsumerWidget {
         final actor = actors[index];
 
         return Container(
-          padding: EdgeInsets.symmetric(horizontal: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 10),
           width: 135,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -374,7 +374,7 @@ class _ActorsInfo extends ConsumerWidget {
                 actor.character ?? '',
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style:  TextStyle(
+                style:  const TextStyle(
                   fontWeight: FontWeight.bold
                 ),
               ),
