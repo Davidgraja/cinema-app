@@ -9,7 +9,7 @@ class FullScreenLoader extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text('Espere por favor'),
+          Text('Cargando ...'),
           SizedBox(
             height: 10.0,
           ),
