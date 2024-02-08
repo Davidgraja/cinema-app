@@ -66,7 +66,7 @@ class _MovieInfo extends StatelessWidget {
 
           const SizedBox(height: 20,),
 
-          _Header(movieName: movie.title,),
+          _Header(movie: movie,),
       
           const SizedBox(height: 20,),
       
@@ -103,14 +103,16 @@ class _MovieImage extends StatelessWidget {
   }
 }
 
-class _Header extends StatelessWidget {
-  final String movieName;
-  const _Header({required this.movieName});
+class _Header extends ConsumerWidget {
+  final Movie movie;
+  const _Header({required this.movie});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
 
     final theme = Theme.of(context);
+
+    final isMovieFavoriteFuture = ref.watch(isMovieFavoriteProvider(movie.id));
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -118,18 +120,25 @@ class _Header extends StatelessWidget {
         SizedBox(
           width: 250,
           child: Text(
-            movieName ,
+            movie.title ,
             style: const TextStyle(fontSize: 18),
             overflow: TextOverflow.ellipsis ,
             maxLines: 2
           )
         ),
     
-        //TODO : implementar guardado de pelicula
-    
         GestureDetector(
-          onTap: () => print('hola'),
-          child: Icon(Icons.bookmark_outline_rounded ,  color: theme.colorScheme.primary)
+          onTap: () async {
+            await ref.read(favoriteMoviesProvider.notifier).toggleFavorite(movie);
+            ref.invalidate(isMovieFavoriteProvider(movie.id));
+          },
+          child: isMovieFavoriteFuture.when(
+            loading: () => const CircularProgressIndicator(strokeWidth: 2),
+            data: (isFavorite) => isFavorite
+            ? Icon(Icons.bookmark  , color: theme.colorScheme.secondary,)
+            : Icon(Icons.bookmark_outline_rounded ,  color: theme.colorScheme.primary),
+            error: ( _, __ ) => throw UnimplementedError() ,
+          )
         )
       ],
     );
