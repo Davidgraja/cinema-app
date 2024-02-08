@@ -223,7 +223,7 @@ class _CustomTabBar extends StatelessWidget {
           
                 MovieVideo( movieId:  movie.id,),
 
-                const Text('Actores'),
+                _ActorsInfo( movieId: movie.id.toString(),),
               ],
             )
           )
@@ -319,6 +319,70 @@ class _TabBarViewDetails extends StatelessWidget {
         )
       
       ],
+    );
+  }
+}
+
+
+class _ActorsInfo extends ConsumerWidget {
+  final  String movieId ;
+  const _ActorsInfo({ required this.movieId});
+
+  @override
+  Widget build(BuildContext context , WidgetRef ref) {
+    
+    final actorsByMovie = ref.watch(actorsByMovieProvider);
+
+    if(actorsByMovie[movieId] == null){
+      return const Center(
+        child: CircularProgressIndicator(strokeWidth: 2,),
+      );
+    }
+
+    final actors = actorsByMovie[movieId];
+
+    return ListView.builder(
+      scrollDirection: Axis.horizontal,
+      itemCount: actors!.length,
+      itemBuilder: (context, index) {
+        final actor = actors[index];
+
+        return Container(
+          padding: EdgeInsets.symmetric(horizontal: 10),
+          width: 135,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.network(
+                  actor.profilePath,
+                  width: double.infinity,
+                  height: 180,
+                  fit: BoxFit.cover,
+                ),
+              ),
+
+              Text(
+                actor.name,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+
+              Text(
+                actor.character ?? '',
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style:  TextStyle(
+                  fontWeight: FontWeight.bold
+                ),
+              ),
+
+            ],
+          ),
+        );
+      },
     );
   }
 }

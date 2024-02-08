@@ -74,6 +74,8 @@ class MoviesdbDatasources extends MoviesDataSources {
 
     final Movie movie = MovieMapper.movieDetailsEntity(movieDetails);
 
+    await Future.delayed(const Duration(milliseconds: 600));
+
     return movie;
   }
 
