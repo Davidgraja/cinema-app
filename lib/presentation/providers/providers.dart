@@ -7,4 +7,5 @@ export 'movies/movies_providers.dart';
 export 'movies/movies_slideshow_provider.dart';
 export 'searchs/search_movies_provider.dart';
 export 'storage/local_storage_provider.dart';
-export 'storage/fovite_movies_provider.dart';
+export 'storage/favorite_movies_provider.dart';
+export 'storage/is_movie_favorite_provider.dart';
