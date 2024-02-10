@@ -97,7 +97,7 @@ class _Slide extends StatelessWidget {
                 width: 150,
                 height: 220,
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(10),
                   child: FadeInImage(
                     placeholderFit: BoxFit.cover,
                     fit: BoxFit.cover,
