@@ -43,7 +43,6 @@ class FavoritesViewState extends ConsumerState<FavoritesView> with AutomaticKeep
     final List<Movie> favoritesMovies =  ref.watch(favoriteMoviesProvider).values.toList();
 
     if(favoritesMovies.isEmpty){
-      final colorScheme = Theme.of(context).colorScheme;
       return SizedBox.expand(
           child:Column(
             mainAxisAlignment: MainAxisAlignment.center,
