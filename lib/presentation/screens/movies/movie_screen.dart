@@ -201,8 +201,7 @@ class _CustomTabBar extends StatelessWidget {
               isScrollable: true,
               dividerHeight: 0,
               tabAlignment:(MediaQuery.of(context).size.width < 400) ? TabAlignment.start : TabAlignment.center,
-
-              splashBorderRadius: BorderRadius.circular(18),
+              overlayColor: const MaterialStatePropertyAll(Colors.transparent),
               indicatorPadding: const EdgeInsets.all(10),
               tabs: const [
                 
