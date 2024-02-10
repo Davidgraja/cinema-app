@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:cinemapedia/domian/entities/entities.dart';
 import 'package:cinemapedia/presentation/providers/providers.dart';
 import 'package:cinemapedia/presentation/widgets/widgets.dart';
+import 'package:cinemapedia/presentation/helpers/get_country_by_its_code.dart';
 
 class MovieScreen extends ConsumerStatefulWidget {
   final String movieId;
@@ -158,7 +159,7 @@ class _InformationSubtitles extends StatelessWidget {
       children: [
         
         _CustomSizeBox(
-          textValue: movie.originalLanguage, 
+          textValue: getCountryByItsCode(movie.originalLanguage), 
           icon: Icon(Icons.language_rounded , color: theme.colorScheme.primary, size: 20,)
         ),
         
