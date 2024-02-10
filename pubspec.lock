@@ -696,6 +696,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.4.1"
+  sealed_languages:
+    dependency: "direct main"
+    description:
+      name: sealed_languages
+      sha256: "71dedb52a19929772e2083db4391620a77f0f447d14ffd5c738f86142cab16cf"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.0"
   shelf:
     dependency: transitive
     description:
