@@ -48,13 +48,12 @@ class FavoritesViewState extends ConsumerState<FavoritesView> with AutomaticKeep
           child:Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.favorite_outlined , size: 60  , color: colorScheme.inversePrimary,),
               const Text('Ohh nooo!' , style:  TextStyle(fontSize: 30),),
-              const Text('Aun no tiene películas favoritas' , style:  TextStyle(fontSize: 20),),
+              const Text('No tiene películas guardadas ' , style:  TextStyle(fontSize: 20),),
 
               const SizedBox(height: 10,),
 
-              FilledButton.tonal(onPressed: () => context.go('/home/0'), child: const Text('Empieza a buscar'))
+              FilledButton.tonal(onPressed: () => context.go('/home/0'), child: const Text('Empezar a buscar'))
             ],
           )
       );
