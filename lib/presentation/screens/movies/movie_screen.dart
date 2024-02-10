@@ -188,18 +188,20 @@ class _CustomTabBar extends StatelessWidget {
     final theme = Theme.of(context);
 
     return DefaultTabController(
-      length: 3,
+      length: 4,
       child: Column(
-        mainAxisSize: MainAxisSize.min,
         children: [
           Container(
              decoration: BoxDecoration(
               border: Border.all(width: 1.0 ,color: theme.colorScheme.secondary),
-              borderRadius: BorderRadius.circular(18)
+              borderRadius: BorderRadius.circular(10)
              ), 
       
             child: TabBar(
+              isScrollable: true,
               dividerHeight: 0,
+              tabAlignment:(MediaQuery.of(context).size.width < 400) ? TabAlignment.start : TabAlignment.center,
+
               splashBorderRadius: BorderRadius.circular(18),
               indicatorPadding: const EdgeInsets.all(10),
               tabs: const [
@@ -214,6 +216,10 @@ class _CustomTabBar extends StatelessWidget {
             
                 Tab(
                   text: 'Actores',
+                ),
+
+                Tab(
+                  text: 'Recomendaciones',
                 ),
               ], 
             ),
@@ -406,6 +412,7 @@ class _CustomTabBarsView extends StatelessWidget {
         _TabBarViewDetails(geners: movie.genreIds, overview: movie.overview),
         MovieVideo( movieId:  movie.id,),
         _ActorsInfo( movieId: movie.id.toString(),),
+        SimilarMovies(movieId: movie.id)
       ]
     );
   }
