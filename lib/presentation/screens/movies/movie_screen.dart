@@ -221,20 +221,20 @@ class _CustomTabBar extends StatelessWidget {
       
           const SizedBox(height: 20,),
 
-          Container(
-          constraints: const  BoxConstraints(
-            maxHeight: 320
-          ),
-            child: TabBarView(
-              children: [
-                
-                _TabBarViewDetails(geners: movie.genreIds, overview: movie.overview),
-          
-                MovieVideo( movieId:  movie.id,),
+          LayoutBuilder(
+          builder: (context, constraints) {
+             if(constraints.maxWidth < 400){
+                return SizedBox(
+                  height: 340,
+                  child: _CustomTabBarsView(movie: movie,),
+                );
+             }
 
-                _ActorsInfo( movieId: movie.id.toString(),),
-              ],
-            )
+             return SizedBox(
+                height:480,
+                child: _CustomTabBarsView(movie: movie,),
+              );
+          },
           )
         ],
       ),
@@ -332,7 +332,6 @@ class _TabBarViewDetails extends StatelessWidget {
   }
 }
 
-
 class _ActorsInfo extends ConsumerWidget {
   final  String movieId ;
   const _ActorsInfo({ required this.movieId});
@@ -392,6 +391,22 @@ class _ActorsInfo extends ConsumerWidget {
           ),
         );
       },
+    );
+  }
+}
+
+class _CustomTabBarsView extends StatelessWidget {
+  final Movie movie;
+  const _CustomTabBarsView({super.key , required this.movie});
+
+  @override
+  Widget build(BuildContext context) {
+    return TabBarView(
+      children: [
+        _TabBarViewDetails(geners: movie.genreIds, overview: movie.overview),
+        MovieVideo( movieId:  movie.id,),
+        _ActorsInfo( movieId: movie.id.toString(),),
+      ]
     );
   }
 }
