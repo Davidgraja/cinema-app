@@ -40,7 +40,8 @@ class _MovieVideoViewState extends State<_MovieVideoView> {
   late final PodPlayerController controller;
   late String youtubeLink;
   bool isEmpty = false;
- 
+  bool thereIsError = false;
+
   @override
   void initState() {
 
@@ -52,13 +53,20 @@ class _MovieVideoViewState extends State<_MovieVideoView> {
       youtubeLink = 'https://youtu.be/${widget.videos.first.youtubeKey}';
     }
 
+
+
     controller = PodPlayerController(
         playVideoFrom: PlayVideoFrom.youtube(youtubeLink),
         podPlayerConfig: const PodPlayerConfig(
         autoPlay: false,
         isLooping: false,
       )
-    )..initialise();  
+    )..initialise()
+    .catchError((e){
+      setState(() {
+        thereIsError = true;
+      });
+    });
 
     super.initState();
   }
@@ -73,9 +81,11 @@ class _MovieVideoViewState extends State<_MovieVideoView> {
   Widget build(BuildContext context) {
 
     if(isEmpty){
-      return const Center(
-        child: Text('El trailer no ha sido añadido '),
-      );
+      return const _ErrorMessage(message: 'El trailer no ha sido añadido' );
+    }
+
+    if(thereIsError) {
+      return const _ErrorMessage(message: 'Este trailer por terminos de privacidad no es posible reproducirlo' );
     }
 
     return Column(
@@ -90,6 +100,25 @@ class _MovieVideoViewState extends State<_MovieVideoView> {
           child: PodVideoPlayer(controller: controller)
         ),
       ],
+    );
+  }
+}
+
+
+class _ErrorMessage extends StatelessWidget {
+  final String message;
+  const _ErrorMessage({ required this.message});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text('Lo sentimos' , style: Theme.of(context).textTheme.titleLarge,),
+          Text( message, textAlign: TextAlign.center,),
+        ],
+      ),
     );
   }
 }
