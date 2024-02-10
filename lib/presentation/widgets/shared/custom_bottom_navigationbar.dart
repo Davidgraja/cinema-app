@@ -41,7 +41,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
       destinations: const [
         NavigationDestination(icon: Icon(Icons.home_max_outlined), label: 'Inicio'),
         NavigationDestination(icon: Icon(Icons.stars), label: 'Populares'),
-        NavigationDestination(icon: Icon(Icons.favorite_border), label: 'Favoritos'),
+        NavigationDestination(icon: Icon(Icons.bookmark_border_outlined), label: 'Tus peliculas'),
       ],
 
     );
